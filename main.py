@@ -111,7 +111,7 @@ def generate_invoice(user, customer, invoice, services):
         tax_rate = 22  # Fixed DDV rate
         ddv = tax_base * (tax_rate / 100)
         sum_with_tax = tax_base + ddv
-        total_sum += sum_with_tax
+        total_sum += tax_base
 
         # Populate table rows
         pdf.cell(50, line_height, service.name, border=0)  # Left-aligned
@@ -212,7 +212,7 @@ async def generate_invoice_api(invoice_request: InvoiceRequest):
         services=invoice_request.services,
     )
     os.makedirs("./invoices", exist_ok=True)
-    invoice_name = f"Invoice_{invoice_request.invoice.invoice_number}_{invoice_request.customer.name.replace(' ', '-').lower()}.pdf"
+    invoice_name = f"Invoice_{invoice_request.invoice.invoice_number}_{invoice_request.customer.name.replace('.', '').replace(',', '-').replace(' ', '-').replace('--', '-').lower()}.pdf"
     pdf_path = f"./invoices/{invoice_name}"
     pdf.output(pdf_path)
     return FileResponse(pdf_path, media_type="application/pdf", filename=invoice_name)
