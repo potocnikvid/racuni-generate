@@ -42,19 +42,24 @@ class PDF(fpdf.FPDF):
         self.set_font("Arial", style="B", size=10)
         self.cell(0, 5, f"RAČUN št.: {self.invoice.invoice_number}", 0, 1, "R")
         self.set_font("Arial", size=9)
-        self.cell(0, 5, f"Datum izdaje: {datetime.now().strftime('%d.%m.%Y')}", 0, 1, "R")
-        self.ln(2)
 
         # Service dates (below invoice info)
         issue_date_formatted = (
             datetime.fromisoformat(self.invoice.issue_date[:-1]).strftime('%d.%m.%Y')
             if self.invoice.issue_date else 'Ni določeno'
         )
+        date_formatted = (
+            datetime.fromisoformat(self.invoice.issue_date[:-1]).strftime('%d.%m.%Y')
+            if self.invoice.date else 'Ni določeno'
+        )
         due_date_formatted = (
             datetime.fromisoformat(self.invoice.due_date[:-1]).strftime('%d.%m.%Y')
             if self.invoice.due_date else 'Ni določeno'
         )
-        self.cell(0, 5, f"Datum opravljene storitve: {issue_date_formatted}", 0, 1, "R")
+        self.cell(0, 5, f"Datum izdaje: {issue_date_formatted}", 0, 1, "R")
+        # self.cell(0, 5, f"Datum izdaje: {datetime.now().strftime('%d.%m.%Y')}", 0, 1, "R")
+        self.ln(2)
+        self.cell(0, 5, f"Datum opravljene storitve: {date_formatted}", 0, 1, "R")
         self.cell(0, 5, f"Datum zapadlosti računa: {due_date_formatted}", 0, 1, "R")
         self.ln(5)
 
@@ -185,6 +190,7 @@ class Customer(BaseModel):
 class Invoice(BaseModel):
     invoice_number: str
     issue_date: Optional[str] = None
+    date: Optional[str] = None
     due_date: Optional[str] = None
 
 class InvoiceRequest(BaseModel):
